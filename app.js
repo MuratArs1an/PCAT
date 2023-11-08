@@ -33,11 +33,19 @@ app.get("/", async (req, res) => {
   })
 });
 
-app.get("/about",(reg,res)=>{
+app.get("/photos/:id",async(req,res)=>{
+  //console.log(req.params.id);
+  const photo= await Photo.findById(req.params.id)
+  res.render('photo', {
+    photo
+  })
+});
+
+app.get("/about",(req,res)=>{
   res.render('about')
 });
 
-app.get("/add",(reg,res)=>{
+app.get("/add",(req,res)=>{
   res.render('add')
 });
 
