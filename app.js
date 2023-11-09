@@ -6,6 +6,8 @@ const Photo=require('./models/photo');
 const mongoose=require('mongoose')
 const fileUpload=require('express-fileupload');
 const fs=require('fs')
+//put ve delete requesti desteklemeyen tarayıcılar icin
+const methodOverride=require('method-override')
 
 const port = 3000;
 
@@ -26,6 +28,7 @@ app.use(express.static('public')); //static dosyalarımız tanımladık
 app.use(express.urlencoded({extended:true}))
 app.use(express.json())
 app.use(fileUpload());
+app.use(methodOverride('_method'));
 /* app.use(myLogger); */
 
 //ROUTES
@@ -70,6 +73,22 @@ app.post("/photos",async (req,res)=>{ //add.ejs formunda post methoduna action o
     }
   )
 });
+
+app.get("/photos/edit/:id", async(req,res)=>{
+  const photo=await Photo.findOne({_id:req.params.id})
+  res.render('edit',{
+    photo
+  })
+});
+
+app.put("/photos/:id",async (req,res)=>{
+  const photo=await Photo.findOne({_id:req.params.id})
+  photo.title=req.body.title
+  photo.description=req.body.description
+  photo.save();
+  res.redirect(`/photos/${req.params.id}`)
+});
+
 
 app.listen(port, () => {
   console.log(`sunucu ${port} portunda baslatıldı`);
